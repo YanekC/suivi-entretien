@@ -1,0 +1,31 @@
+services:
+  db:
+    image: docker.io/library/postgres
+    restart: always
+    # set shared memory limit when using docker compose
+    shm_size: 128mb
+    ports:
+      - 5432:5432
+    env_file:
+      - .env.db
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready"]
+      interval: 10s
+      retries: 5
+      start_period: 5s
+      timeout: 10s
+  adminer:
+    image: docker.io/library/adminer
+    restart: always
+    ports:
+      - 8080:8080
+
+  # server:
+  #   image: suivi-entretien
+  #   env_file:
+  #     - .env
+  #   depends_on:
+  #     db:
+  #       condition: service_healthy
+  #   ports:
+  #     - 3000:3000

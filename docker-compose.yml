@@ -9,7 +9,7 @@ services:
     env_file:
       - .env.db
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready"]
+      test: ["CMD-SHELL", "pg_isready -d $${POSTGRES_DB} -U $${POSTGRES_USER}"]
       interval: 10s
       retries: 5
       start_period: 5s
@@ -20,12 +20,12 @@ services:
     ports:
       - 8080:8080
 
-  # server:
-  #   image: suivi-entretien
-  #   env_file:
-  #     - .env
-  #   depends_on:
-  #     db:
-  #       condition: service_healthy
-  #   ports:
-  #     - 3000:3000
+  server:
+    image: suivi-entretien
+    env_file:
+      - .env.server
+    depends_on:
+      db:
+        condition: service_healthy
+    ports:
+      - 3000:3000

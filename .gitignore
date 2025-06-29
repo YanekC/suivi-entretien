@@ -1,5 +1,6 @@
 .DS_Store
-.env
+.env.server
+.env.db
 /node_modules/
 *.tsbuildinfo
 

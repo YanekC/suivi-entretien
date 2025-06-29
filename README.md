@@ -4,14 +4,7 @@ A modern, production-ready template for building full-stack React applications u
 
 ## Features
 
-- 🚀 Server-side rendering
-- ⚡️ Hot Module Replacement (HMR)
-- 📦 Asset bundling and optimization
-- 🔄 Data loading and mutations
-- 🔒 TypeScript by default
-- 🎉 TailwindCSS for styling
-- 💾 PostgreSQL + DrizzleORM
-- 📖 [React Router docs](https://reactrouter.com/)
+TBD
 
 ## Getting Started
 
@@ -25,7 +18,8 @@ npm install
 
 ### Development
 
-Copy `.env.example` to `.env` and provide a `DATABASE_URL` with your connection string.
+Copy `.env.server.example` to `.env.server` and provide a `DATABASE_URL` with your connection string.
+Copy `.env.db.example` to `.env.db` and provide database username and password.
 
 Run an initial database migration:
 
@@ -59,8 +53,8 @@ To build and run using Docker:
 # For npm
 docker build -t suivi-entretien .
 
-# Run the container
-docker run -p 3000:3000 suivi-entretien
+# Run the containers
+docker compose up -d
 ```
 
 The containerized application can be deployed to any platform that supports Docker, including:

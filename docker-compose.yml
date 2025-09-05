@@ -20,12 +20,13 @@ services:
     ports:
       - 8080:8080
 
-  server:
-    image: suivi-entretien
-    env_file:
-      - .env.server
-    depends_on:
-      db:
-        condition: service_healthy
-    ports:
-      - 3000:3000
+  # server:
+  #   image: suivi-entretien
+  #   build: .
+  #   env_file:
+  #     - .env.server
+  #   depends_on:
+  #     db:
+  #       condition: service_healthy
+  #   ports:
+  #     - 3000:3000

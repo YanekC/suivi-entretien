@@ -1,0 +1,1 @@
+ALTER TABLE "maintenances" ALTER COLUMN "dateDone" DROP NOT NULL;

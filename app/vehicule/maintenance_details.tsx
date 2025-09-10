@@ -1,18 +1,22 @@
 import { useState } from "react";
+import { useFetcher } from "react-router";
 import type { Maintenance, Vehicule } from "~/database/schema";
 
 function StatusToggle({
   updating,
   maintenance,
   onChange,
+  name,
 }: {
   updating: boolean;
   maintenance: Maintenance;
   onChange: (newStatus: boolean) => void;
+  name: string;
 }) {
   if (updating) {
     return (
       <input
+        name={name}
         type="checkbox"
         checked={maintenance.done}
         onChange={(e) => onChange(e.target.checked)}
@@ -27,11 +31,48 @@ function StatusToggle({
   }
 }
 
+function ModifyButton({
+  updating,
+  setUpdateing,
+  onValidate,
+}: {
+  updating: boolean;
+  setUpdateing: (updating: boolean) => void;
+  onValidate: (event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => void;
+}) {
+  if (!updating) {
+    return (
+      <button
+        className="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-700"
+        type="button"
+        onClick={() => setUpdateing(true)}
+      >
+        Modifier
+      </button>
+    );
+  } else {
+    return (
+      <button
+        className="px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-800"
+        onClick={(event) => {
+          setUpdateing(false);
+          onValidate(event);
+        }}
+        type="button"
+      >
+        Valider
+      </button>
+    );
+  }
+}
+
 function DateUpdate({
+  name,
   updating,
   maintenance,
   onChange,
 }: {
+  name: string;
   updating: boolean;
   maintenance: Maintenance;
   onChange: (newDate: string) => void;
@@ -39,6 +80,7 @@ function DateUpdate({
   if (updating) {
     return (
       <input
+        name={name}
         type="date"
         value={maintenance.dateToDo}
         onChange={(e) => onChange(e.target.value)}
@@ -63,8 +105,10 @@ export default function MaintenanceDetails({
   maintenanceParam: Maintenance;
   vehicule: Vehicule;
 }) {
+  let fetcher = useFetcher();
   const [updating, setUpdating] = useState(false);
   const [maintenance, setMaintenance] = useState(maintenanceParam);
+
   return (
     <main className="flex flex-col items-center justify-center pt-16 pb-4">
       <header className="mb-6 flex flex-col items-center">
@@ -73,66 +117,70 @@ export default function MaintenanceDetails({
           {vehicule.brand} {vehicule.model}
         </p>
       </header>
-
-      <section className="flex flex-col gap-4 p-6 rounded shadow w-full max-w-md">
-        <div className="flex justify-between">
-          <span className="font-semibold">Statut:</span>
-          <StatusToggle
-            updating={updating}
-            maintenance={maintenance}
-            onChange={(newStatus) => {
-              setMaintenance({ ...maintenance, done: newStatus });
-            }}
-          />
-        </div>
-
-        {maintenance.dateDone && (
+      <fetcher.Form method="post" className="w-full flex flex-col items-center">
+        <section className="flex flex-col gap-4 p-6 rounded shadow w-full max-w-md">
           <div className="flex justify-between">
-            <span className="font-semibold">Date réalisée:</span>
-            <DateUpdate
+            <span className="font-semibold">Statut:</span>
+            <StatusToggle
+              name="done"
               updating={updating}
               maintenance={maintenance}
-              onChange={(newDate) => {
-                setMaintenance({ ...maintenance, dateDone: newDate });
+              onChange={(newStatus) => {
+                setMaintenance({ ...maintenance, done: newStatus });
               }}
             />
           </div>
-        )}
 
-        {maintenance.dateToDo && (
-          <div className="flex justify-between">
-            <span className="font-semibold">Date prévue:</span>
-            <DateUpdate
-              updating={updating}
-              maintenance={maintenance}
-              onChange={(newDate) => {
-                setMaintenance({ ...maintenance, dateToDo: newDate });
-              }}
-            />
-          </div>
-        )}
+          {maintenance.dateDone && (
+            <div className="flex justify-between">
+              <span className="font-semibold">Date réalisée:</span>
+              <DateUpdate
+                name="dateDone"
+                updating={updating}
+                maintenance={maintenance}
+                onChange={(newDate) => {
+                  setMaintenance({ ...maintenance, dateDone: newDate });
+                }}
+              />
+            </div>
+          )}
 
-        {maintenance.cost && (
+          {maintenance.dateToDo && (
+            <div className="flex justify-between">
+              <span className="font-semibold">Date prévue:</span>
+              <DateUpdate
+                name="dateToDo"
+                updating={updating}
+                maintenance={maintenance}
+                onChange={(newDate) => {
+                  setMaintenance({ ...maintenance, dateToDo: newDate });
+                }}
+              />
+            </div>
+          )}
+
           <div className="flex justify-between">
             <span className="font-semibold">Coût:</span>
             <span className="text-green-600 font-semibold">
               {maintenance.cost}€
             </span>
           </div>
-        )}
-      </section>
+        </section>
 
-      <div className="mt-6 flex gap-4">
-        <button
-          className="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600"
-          onClick={() => setUpdating(!updating)}
-        >
-          Modifier
-        </button>
-        <button className="px-4 py-2 bg-red-500 text-white rounded-md hover:bg-red-600">
-          Supprimer
-        </button>
-      </div>
+        <div className="mt-6 flex gap-4">
+          <ModifyButton
+            updating={updating}
+            setUpdateing={setUpdating}
+            onValidate={(event) => {
+              event.preventDefault();
+              fetcher.submit(event.currentTarget.form);
+            }}
+          />
+          <button className="px-4 py-2 bg-red-500 text-white rounded-md hover:bg-red-600">
+            Supprimer
+          </button>
+        </div>
+      </fetcher.Form>
     </main>
   );
 }

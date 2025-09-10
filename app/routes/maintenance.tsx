@@ -36,6 +36,25 @@ export async function loader({ params }: Route.LoaderArgs) {
   };
 }
 
+export async function action({ request, params }: Route.ActionArgs) {
+  const db = database();
+  const formData = await request.formData();
+  console.log("Form Data:", Object.fromEntries(formData.entries()));
+
+  const maintenanceId = parseInt(params.maintenanceId);
+  const done = formData.get("done") === "on";
+  const dateToDo = formData.get("dateToDo") as string;
+  const dateDone = formData.get("dateDone") as string;
+
+  await db
+    .update(maintenances)
+    .set({
+      done,
+      dateToDo: dateToDo,
+      dateDone: dateDone,
+    })
+    .where(eq(maintenances.id, maintenanceId));
+}
 export default function Maintenance({ loaderData }: Route.ComponentProps) {
   return (
     <MaintenanceDetails

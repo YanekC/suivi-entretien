@@ -42,6 +42,7 @@ export async function action({ request, params }: Route.ActionArgs) {
   console.log("Form Data:", Object.fromEntries(formData.entries()));
 
   const maintenanceId = parseInt(params.maintenanceId);
+  const title = formData.get("title") as string;
   const done = formData.get("done") === "on";
   const dateToDo = formData.get("dateToDo") as string;
   const dateDone = formData.get("dateDone") as string;
@@ -49,6 +50,7 @@ export async function action({ request, params }: Route.ActionArgs) {
   await db
     .update(maintenances)
     .set({
+      title,
       done,
       dateToDo: dateToDo,
       dateDone: dateDone,

@@ -2,7 +2,7 @@ import { useState } from "react";
 import { useFetcher } from "react-router";
 import type { Maintenance, Vehicule } from "~/database/schema";
 
-function StatusToggle({
+function UpdatableToggle({
   updating,
   maintenance,
   onChange,
@@ -66,15 +66,15 @@ function ModifyButton({
   }
 }
 
-function DateUpdate({
+function UpdatableDate({
   name,
   updating,
-  maintenance,
+  value,
   onChange,
 }: {
   name: string;
   updating: boolean;
-  maintenance: Maintenance;
+  value: string | null;
   onChange: (newDate: string) => void;
 }) {
   if (updating) {
@@ -82,19 +82,43 @@ function DateUpdate({
       <input
         name={name}
         type="date"
-        value={maintenance.dateToDo}
+        value={value ? value : "2025-01-01"}
         onChange={(e) => onChange(e.target.value)}
         className="border rounded px-2 py-1"
       />
     );
   } else {
+    return <span>{value ? new Date(value).toLocaleDateString() : "N/A"}</span>;
+  }
+}
+
+function UpdatableNumberField({
+  name,
+  updating,
+  className,
+  type,
+  value,
+  onChange,
+}: {
+  name: string;
+  type: string;
+  className?: string;
+  updating: boolean;
+  value: string;
+  onChange: (newValue: string) => void;
+}) {
+  if (updating) {
     return (
-      <span>
-        {maintenance.dateToDo
-          ? new Date(maintenance.dateToDo).toLocaleDateString()
-          : "N/A"}
-      </span>
+      <input
+        name={name}
+        type={type}
+        value={value}
+        onChange={(e) => onChange(e.target.value)}
+        className="border rounded px-2 py-1"
+      />
     );
+  } else {
+    return <span className={className ? className : ""}>{value}</span>;
   }
 }
 
@@ -111,17 +135,27 @@ export default function MaintenanceDetails({
 
   return (
     <main className="flex flex-col items-center justify-center pt-16 pb-4">
-      <header className="mb-6 flex flex-col items-center">
-        <h1 className="mt-4 text-2xl font-bold">{maintenance.title}</h1>
-        <p className="text-gray-500">
-          {vehicule.brand} {vehicule.model}
-        </p>
-      </header>
       <fetcher.Form method="post" className="w-full flex flex-col items-center">
+        <header className="mb-6 flex flex-col items-center">
+          <UpdatableNumberField
+            name="title"
+            updating={updating}
+            type="text"
+            className="mt-4 text-2xl font-bold"
+            value={maintenance.title}
+            onChange={(newValue) => {
+              setMaintenance({ ...maintenance, title: newValue });
+            }}
+          />
+          <p className="text-gray-500">
+            {vehicule.brand} {vehicule.model}
+          </p>
+        </header>
+
         <section className="flex flex-col gap-4 p-6 rounded shadow w-full max-w-md">
           <div className="flex justify-between">
             <span className="font-semibold">Statut:</span>
-            <StatusToggle
+            <UpdatableToggle
               name="done"
               updating={updating}
               maintenance={maintenance}
@@ -131,39 +165,41 @@ export default function MaintenanceDetails({
             />
           </div>
 
-          {maintenance.dateDone && (
-            <div className="flex justify-between">
-              <span className="font-semibold">Date réalisée:</span>
-              <DateUpdate
-                name="dateDone"
-                updating={updating}
-                maintenance={maintenance}
-                onChange={(newDate) => {
-                  setMaintenance({ ...maintenance, dateDone: newDate });
-                }}
-              />
-            </div>
-          )}
+          <div className="flex justify-between">
+            <span className="font-semibold">Date réalisée:</span>
+            <UpdatableDate
+              name="dateDone"
+              updating={updating}
+              value={maintenance.dateDone}
+              onChange={(newDate) => {
+                setMaintenance({ ...maintenance, dateDone: newDate });
+              }}
+            />
+          </div>
 
-          {maintenance.dateToDo && (
-            <div className="flex justify-between">
-              <span className="font-semibold">Date prévue:</span>
-              <DateUpdate
-                name="dateToDo"
-                updating={updating}
-                maintenance={maintenance}
-                onChange={(newDate) => {
-                  setMaintenance({ ...maintenance, dateToDo: newDate });
-                }}
-              />
-            </div>
-          )}
+          <div className="flex justify-between">
+            <span className="font-semibold">Date prévue:</span>
+            <UpdatableDate
+              name="dateToDo"
+              updating={updating}
+              value={maintenance.dateToDo}
+              onChange={(newDate) => {
+                setMaintenance({ ...maintenance, dateToDo: newDate });
+              }}
+            />
+          </div>
 
           <div className="flex justify-between">
             <span className="font-semibold">Coût:</span>
-            <span className="text-green-600 font-semibold">
-              {maintenance.cost}€
-            </span>
+            <UpdatableNumberField
+              name="cost"
+              updating={updating}
+              type="number"
+              value={maintenance.cost.toString()}
+              onChange={(newValue) => {
+                setMaintenance({ ...maintenance, cost: parseFloat(newValue) });
+              }}
+            />
           </div>
         </section>
 

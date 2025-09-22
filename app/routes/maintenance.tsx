@@ -5,6 +5,8 @@ import { maintenances, vehicules } from "~/database/schema";
 import { eq } from "drizzle-orm";
 import { redirect } from "react-router";
 
+const db = database();
+
 export function meta() {
   return [
     { title: "Détails de la maintenance" },
@@ -16,20 +18,17 @@ export function meta() {
 }
 
 export async function loader({ params }: Route.LoaderArgs) {
-  const db = database();
-
   const vehiculeId = parseInt(params.vehiculeId);
-  const maintenanceId = parseInt(params.maintenanceId);
+  const maintenanceId = parseInt(
+    params.maintenanceId ? params.maintenanceId : "-1",
+  );
 
   const vehiculeData = await db
     .select()
     .from(vehicules)
     .where(eq(vehicules.id, vehiculeId));
 
-  const maintenanceData = await db
-    .select()
-    .from(maintenances)
-    .where(eq(maintenances.id, maintenanceId));
+  const maintenanceData = await getMaintenance(maintenanceId);
 
   return {
     vehiculeData,
@@ -38,25 +37,55 @@ export async function loader({ params }: Route.LoaderArgs) {
 }
 
 export async function action({ request, params }: Route.ActionArgs) {
-  const db = database();
   const formData = await request.formData();
   console.log("Form Data:", Object.fromEntries(formData.entries()));
 
-  const maintenanceId = parseInt(params.maintenanceId);
+  const maintenanceId = parseInt(
+    params.maintenanceId ? params.maintenanceId : "-1",
+  );
+  const vehiculeId = parseInt(params.vehiculeId);
 
   switch (request.method) {
     case "DELETE":
-      return redirect(`/vehicules/${params.vehiculeId}`);
+      return redirect(`/vehicules/${vehiculeId}`);
     case "POST":
-      updateMaintenance(db, maintenanceId, formData);
+      updateMaintenance(maintenanceId, formData);
+      break;
+    case "PUT":
+      const newMaintenanceId = await createMaintenance(vehiculeId);
+      return redirect(
+        `/vehicules/${vehiculeId}/maintenance/${newMaintenanceId}`,
+      );
   }
 }
 
-async function updateMaintenance(
-  db: any,
-  maintenanceId: number,
-  formData: FormData,
-) {
+async function getMaintenance(maintenanceId: number) {
+  if (maintenanceId === -1) {
+    return { id: -1, title: "", description: "", dateToDo: "", done: false };
+  }
+
+  return await db
+    .select()
+    .from(maintenances)
+    .where(eq(maintenances.id, maintenanceId));
+}
+
+async function createMaintenance(vehiculeId: number) {
+  const newMaintenance = await db
+    .insert(maintenances)
+    .values({
+      vehiculeId: vehiculeId,
+      title: "Nouvelle maintenance",
+      description: "Description de la maintenance",
+      dateToDo: new Date().toISOString().split("T")[0],
+      cost: 0,
+      done: false,
+    })
+    .returning();
+  return newMaintenance[0].id;
+}
+
+async function updateMaintenance(maintenanceId: number, formData: FormData) {
   const title = formData.get("title") as string;
   const done = formData.get("done") === "on";
   const dateToDo = formData.get("dateToDo") as string;

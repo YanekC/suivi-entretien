@@ -3,6 +3,7 @@ import type { Route } from "./+types/maintenance";
 import MaintenanceDetails from "~/vehicule/maintenance_details";
 import { maintenances, vehicules } from "~/database/schema";
 import { eq } from "drizzle-orm";
+import { redirect } from "react-router";
 
 export function meta() {
   return [
@@ -42,6 +43,20 @@ export async function action({ request, params }: Route.ActionArgs) {
   console.log("Form Data:", Object.fromEntries(formData.entries()));
 
   const maintenanceId = parseInt(params.maintenanceId);
+
+  switch (request.method) {
+    case "DELETE":
+      return redirect(`/vehicules/${params.vehiculeId}`);
+    case "POST":
+      updateMaintenance(db, maintenanceId, formData);
+  }
+}
+
+async function updateMaintenance(
+  db: any,
+  maintenanceId: number,
+  formData: FormData,
+) {
   const title = formData.get("title") as string;
   const done = formData.get("done") === "on";
   const dateToDo = formData.get("dateToDo") as string;
@@ -57,6 +72,7 @@ export async function action({ request, params }: Route.ActionArgs) {
     })
     .where(eq(maintenances.id, maintenanceId));
 }
+
 export default function Maintenance({ loaderData }: Route.ComponentProps) {
   return (
     <MaintenanceDetails

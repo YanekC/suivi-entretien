@@ -212,7 +212,14 @@ export default function MaintenanceDetails({
               fetcher.submit(event.currentTarget.form);
             }}
           />
-          <button className="px-4 py-2 bg-red-500 text-white rounded-md hover:bg-red-600">
+          <button
+            className="px-4 py-2 bg-red-500 text-white rounded-md hover:bg-red-600"
+            onClick={(event) => {
+              event.preventDefault();
+              fetcher.submit(event.currentTarget.form, { method: "delete" });
+            }}
+            type="button"
+          >
             Supprimer
           </button>
         </div>

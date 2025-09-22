@@ -47,6 +47,7 @@ export async function action({ request, params }: Route.ActionArgs) {
 
   switch (request.method) {
     case "DELETE":
+      deleteMaintenance(maintenanceId);
       return redirect(`/vehicules/${vehiculeId}`);
     case "POST":
       updateMaintenance(maintenanceId, formData);
@@ -57,6 +58,10 @@ export async function action({ request, params }: Route.ActionArgs) {
         `/vehicules/${vehiculeId}/maintenance/${newMaintenanceId}`,
       );
   }
+}
+
+async function deleteMaintenance(maintenanceId: number) {
+  await db.delete(maintenances).where(eq(maintenances.id, maintenanceId));
 }
 
 async function getMaintenance(maintenanceId: number) {

@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useFetcher, NavLink } from "react-router";
 import UpdatableCost from "~/components/UpdatableCost";
-import UpdatableMaintenanceStatus from "~/components/UpdatableToggle";
+import UpdatableMaintenanceStatus from "~/components/UpdatableMaintenanceStatus";
 import type { Maintenance, Vehicule } from "~/database/schema";
 
 function ModifyButton({

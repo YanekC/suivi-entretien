@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useFetcher } from "react-router";
+import { useFetcher, NavLink } from "react-router";
 import type { Maintenance, Vehicule } from "~/database/schema";
 
 function UpdatableToggle({
@@ -166,8 +166,28 @@ export default function MaintenanceDetails({
 
   return (
     <main className="flex flex-col items-center justify-center pt-16 pb-4">
+      <NavLink
+        to={`/vehicules/${vehicule.id}`}
+        className="absolute left-0 top-0 p-2 text-blue-500 hover:text-blue-700"
+      >
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          width="24"
+          height="24"
+          fill="none"
+          viewBox="0 0 24 24"
+          className="stroke-current"
+        >
+          <path
+            d="M15 18l-6-6 6-6"
+            strokeWidth="2"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          />
+        </svg>
+      </NavLink>
       <fetcher.Form method="post" className="w-full flex flex-col items-center">
-        <header className="mb-6 flex flex-col items-center">
+        <header className="mb-6 flex flex-col items-center relative w-full max-w-md">
           <UpdatableNumberField
             name="title"
             updating={updating}

@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useFetcher, NavLink } from "react-router";
+import { useFetcher } from "react-router";
 import ModifyButton from "~/components/maintenance/ModifyButton";
 import UpdatableCost from "~/components/maintenance/UpdatableCost";
 import UpdatableDate from "~/components/maintenance/UpdatableDate";
@@ -8,6 +8,7 @@ import UpdatableTextArea from "~/components/maintenance/UpdatableTextArea";
 import UpdatableTextField from "~/components/maintenance/UpdatableTextField";
 import type { Maintenance, Vehicule } from "~/database/schema";
 import ReturnButton from "../ReturnButton";
+import ModifyDeleteButtons from "../ModifyDeleteButtons";
 
 export default function MaintenanceDetails({
   maintenanceParam,
@@ -100,27 +101,18 @@ export default function MaintenanceDetails({
             />
           </div>
         </section>
-
-        <div className="mt-5 flex justify-between w-full max-w-md">
-          <ModifyButton
-            updating={updating}
-            setUpdating={setUpdating}
-            onValidate={(event) => {
-              event.preventDefault();
-              fetcher.submit(event.currentTarget.form);
-            }}
-          />
-          <button
-            className="px-4 py-2 w-30 bg-red-500 text-white rounded-md hover:bg-red-700"
-            onClick={(event) => {
-              event.preventDefault();
-              fetcher.submit(event.currentTarget.form, { method: "delete" });
-            }}
-            type="button"
-          >
-            Supprimer
-          </button>
-        </div>
+        <ModifyDeleteButtons
+          updating={updating}
+          setUpdating={setUpdating}
+          onValidate={(event) => {
+            event.preventDefault();
+            fetcher.submit(event.currentTarget.form);
+          }}
+          onDelete={(event) => {
+            event.preventDefault();
+            fetcher.submit(event.currentTarget.form, { method: "delete" });
+          }}
+        />
       </fetcher.Form>
     </main>
   );

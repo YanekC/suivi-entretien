@@ -122,7 +122,7 @@ export default function MaintenanceDetails({
         <div className="mt-5 flex justify-between w-full max-w-md">
           <ModifyButton
             updating={updating}
-            setUpdateing={setUpdating}
+            setUpdating={setUpdating}
             onValidate={(event) => {
               event.preventDefault();
               fetcher.submit(event.currentTarget.form);

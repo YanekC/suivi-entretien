@@ -1,10 +1,10 @@
 export default function ModifyButton({
   updating,
-  setUpdateing,
+  setUpdating: setUpdateing,
   onValidate,
 }: {
   updating: boolean;
-  setUpdateing: (updating: boolean) => void;
+  setUpdating: (updating: boolean) => void;
   onValidate: (event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => void;
 }) {
   if (!updating) {

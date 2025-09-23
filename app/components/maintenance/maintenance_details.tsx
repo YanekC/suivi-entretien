@@ -57,8 +57,8 @@ export default function MaintenanceDetails({
           </p>
         </header>
 
-        <section className="flex flex-col gap-4 p-6 rounded shadow w-full max-w-md">
-          <div className="flex justify-between">
+        <section className="flex flex-col p-6 rounded shadow w-full max-w-md">
+          <div className="flex justify-between mb-4 ">
             <span className="font-semibold">Statut:</span>
             <UpdatableMaintenanceStatus
               name="done"
@@ -70,7 +70,7 @@ export default function MaintenanceDetails({
             />
           </div>
 
-          <div className="flex justify-between">
+          <div className="flex justify-between mb-4">
             <span className="font-semibold">Date réalisée:</span>
             <UpdatableDate
               name="dateDone"
@@ -82,7 +82,7 @@ export default function MaintenanceDetails({
             />
           </div>
 
-          <div className="flex justify-between">
+          <div className="flex justify-between mb-4">
             <span className="font-semibold">Date prévue:</span>
             <UpdatableDate
               name="dateToDo"
@@ -94,7 +94,7 @@ export default function MaintenanceDetails({
             />
           </div>
 
-          <div className="flex justify-between">
+          <div className="flex justify-between mb-4">
             <UpdatableCost
               name="cost"
               updating={updating}
@@ -104,10 +104,10 @@ export default function MaintenanceDetails({
               }}
             />
           </div>
-          <div className="flex justify-between">
+          <div className="flex justify-between mb-1">
             <span className="font-semibold">Description : </span>
           </div>
-          <div>
+          <div className="border-t-1 border-gray-600 pt-1">
             <UpdatableTextArea
               name="description"
               updating={updating}

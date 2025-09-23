@@ -122,6 +122,37 @@ function UpdatableNumberField({
   }
 }
 
+function UpdatableTextArea({
+  name,
+  updating,
+  value,
+  onChange,
+}: {
+  name: string;
+  updating: boolean;
+  value: string;
+  onChange: (newValue: string) => void;
+}) {
+  if (updating) {
+    return (
+      <textarea
+        name={name}
+        value={value}
+        onChange={(e) => onChange(e.target.value)}
+        className="border rounded px-2 py-1 w-full max-w-md resize-none"
+        rows={3}
+        placeholder="Description de la maintenance..."
+      />
+    );
+  } else {
+    return (
+      <p className="text-white max-w-md p-2 border-1 border-gray-500 rounded-md ">
+        {value || "Aucune description"}
+      </p>
+    );
+  }
+}
+
 export default function MaintenanceDetails({
   maintenanceParam,
   vehicule,
@@ -198,6 +229,19 @@ export default function MaintenanceDetails({
               value={maintenance.cost.toString()}
               onChange={(newValue) => {
                 setMaintenance({ ...maintenance, cost: parseFloat(newValue) });
+              }}
+            />
+          </div>
+          <div className="flex justify-between">
+            <span className="font-semibold">Description : </span>
+          </div>
+          <div>
+            <UpdatableTextArea
+              name="description"
+              updating={updating}
+              value={maintenance.description || ""}
+              onChange={(newValue) => {
+                setMaintenance({ ...maintenance, description: newValue });
               }}
             />
           </div>

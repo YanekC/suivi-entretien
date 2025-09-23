@@ -1,11 +1,14 @@
-import { database } from "~/database/context";
 import type { Route } from "./+types/maintenance";
 import MaintenanceDetails from "~/vehicule/maintenance_details";
-import { maintenances, vehicules } from "~/database/schema";
-import { eq } from "drizzle-orm";
+import { type Maintenance } from "~/database/schema";
 import { redirect } from "react-router";
-
-const db = database();
+import {
+  createMaintenance,
+  deleteMaintenance,
+  getMaintenanceOrDefault,
+  updateMaintenance,
+} from "~/database/maintenanceDao";
+import { getVehiculeOrDefault } from "~/database/vehiculeDao";
 
 export function meta() {
   return [
@@ -23,12 +26,9 @@ export async function loader({ params }: Route.LoaderArgs) {
     params.maintenanceId ? params.maintenanceId : "-1",
   );
 
-  const vehiculeData = await db
-    .select()
-    .from(vehicules)
-    .where(eq(vehicules.id, vehiculeId));
+  const vehiculeData = await getVehiculeOrDefault(vehiculeId);
 
-  const maintenanceData = await getMaintenance(maintenanceId);
+  const maintenanceData = await getMaintenanceOrDefault(maintenanceId);
 
   return {
     vehiculeData,
@@ -47,10 +47,20 @@ export async function action({ request, params }: Route.ActionArgs) {
 
   switch (request.method) {
     case "DELETE":
-      deleteMaintenance(maintenanceId);
+      await deleteMaintenance(maintenanceId);
       return redirect(`/vehicules/${vehiculeId}`);
     case "POST":
-      updateMaintenance(maintenanceId, formData);
+      const maintenance: Maintenance = {
+        id: maintenanceId,
+        vehiculeId: vehiculeId,
+        title: (formData.get("title") as string) || "",
+        done: formData.get("done") === "on",
+        dateToDo: (formData.get("dateToDo") as string) || "",
+        dateDone: (formData.get("dateDone") as string) || "",
+        description: (formData.get("description") as string) || "",
+        cost: parseInt(formData.get("cost") as string) || 0,
+      };
+      updateMaintenance(maintenance);
       break;
     case "PUT":
       const newMaintenanceId = await createMaintenance(vehiculeId);
@@ -60,58 +70,13 @@ export async function action({ request, params }: Route.ActionArgs) {
   }
 }
 
-async function deleteMaintenance(maintenanceId: number) {
-  await db.delete(maintenances).where(eq(maintenances.id, maintenanceId));
-}
-
-async function getMaintenance(maintenanceId: number) {
-  if (maintenanceId === -1) {
-    return { id: -1, title: "", description: "", dateToDo: "", done: false };
-  }
-
-  return await db
-    .select()
-    .from(maintenances)
-    .where(eq(maintenances.id, maintenanceId));
-}
-
-async function createMaintenance(vehiculeId: number) {
-  const newMaintenance = await db
-    .insert(maintenances)
-    .values({
-      vehiculeId: vehiculeId,
-      title: "Nouvelle maintenance",
-      description: "Description de la maintenance",
-      dateToDo: new Date().toISOString().split("T")[0],
-      cost: 0,
-      done: false,
-    })
-    .returning();
-  return newMaintenance[0].id;
-}
-
-async function updateMaintenance(maintenanceId: number, formData: FormData) {
-  const title = formData.get("title") as string;
-  const done = formData.get("done") === "on";
-  const dateToDo = formData.get("dateToDo") as string;
-  const dateDone = formData.get("dateDone") as string;
-
-  await db
-    .update(maintenances)
-    .set({
-      title,
-      done,
-      dateToDo: dateToDo,
-      dateDone: dateDone,
-    })
-    .where(eq(maintenances.id, maintenanceId));
-}
-
-export default function Maintenance({ loaderData }: Route.ComponentProps) {
+export default function MaintenanceContainer({
+  loaderData,
+}: Route.ComponentProps) {
   return (
     <MaintenanceDetails
-      maintenanceParam={loaderData.maintenanceData[0]}
-      vehicule={loaderData.vehiculeData[0]}
+      maintenanceParam={loaderData.maintenanceData}
+      vehicule={loaderData.vehiculeData}
     />
   );
 }

@@ -43,7 +43,7 @@ function ModifyButton({
   if (!updating) {
     return (
       <button
-        className="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-700"
+        className="px-4 py-2 w-30 bg-blue-500 text-white rounded-md hover:bg-blue-700"
         type="button"
         onClick={() => setUpdateing(true)}
       >
@@ -53,7 +53,7 @@ function ModifyButton({
   } else {
     return (
       <button
-        className="px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-800"
+        className="px-4 py-2 w-30 bg-green-600 text-white rounded-md hover:bg-green-800"
         onClick={(event) => {
           setUpdateing(false);
           onValidate(event);
@@ -88,11 +88,17 @@ function UpdatableDate({
       />
     );
   } else {
-    return <span>{value ? new Date(value).toLocaleDateString() : "N/A"}</span>;
+    return (
+      <span>
+        {value
+          ? new Date(value).toLocaleDateString(navigator.languages)
+          : "N/A"}
+      </span>
+    );
   }
 }
 
-function UpdatableNumberField({
+function UpdatableField({
   name,
   updating,
   className,
@@ -146,7 +152,7 @@ function UpdatableTextArea({
     );
   } else {
     return (
-      <p className="text-white max-w-md p-2 border-1 border-gray-500 rounded-md ">
+      <p className="text-white max-w-md p-2 whitespace-pre">
         {value || "Aucune description"}
       </p>
     );
@@ -188,7 +194,7 @@ export default function MaintenanceDetails({
       </NavLink>
       <fetcher.Form method="post" className="w-full flex flex-col items-center">
         <header className="mb-6 flex flex-col items-center relative w-full max-w-md">
-          <UpdatableNumberField
+          <UpdatableField
             name="title"
             updating={updating}
             type="text"
@@ -242,7 +248,7 @@ export default function MaintenanceDetails({
 
           <div className="flex justify-between">
             <span className="font-semibold">Coût:</span>
-            <UpdatableNumberField
+            <UpdatableField
               name="cost"
               updating={updating}
               type="number"
@@ -267,7 +273,7 @@ export default function MaintenanceDetails({
           </div>
         </section>
 
-        <div className="mt-6 flex gap-4">
+        <div className="mt-5 flex justify-between w-full max-w-md">
           <ModifyButton
             updating={updating}
             setUpdateing={setUpdating}
@@ -277,7 +283,7 @@ export default function MaintenanceDetails({
             }}
           />
           <button
-            className="px-4 py-2 bg-red-500 text-white rounded-md hover:bg-red-600"
+            className="px-4 py-2 w-30 bg-red-500 text-white rounded-md hover:bg-red-700"
             onClick={(event) => {
               event.preventDefault();
               fetcher.submit(event.currentTarget.form, { method: "delete" });

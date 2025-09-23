@@ -1,35 +1,8 @@
 import { useState } from "react";
 import { useFetcher, NavLink } from "react-router";
+import UpdatableCost from "~/components/UpdatableCost";
+import UpdatableMaintenanceStatus from "~/components/UpdatableToggle";
 import type { Maintenance, Vehicule } from "~/database/schema";
-
-function UpdatableToggle({
-  updating,
-  maintenance,
-  onChange,
-  name,
-}: {
-  updating: boolean;
-  maintenance: Maintenance;
-  onChange: (newStatus: boolean) => void;
-  name: string;
-}) {
-  if (updating) {
-    return (
-      <input
-        name={name}
-        type="checkbox"
-        checked={maintenance.done}
-        onChange={(e) => onChange(e.target.checked)}
-      />
-    );
-  } else {
-    return (
-      <span className={maintenance.done ? "text-green-600" : "text-orange-600"}>
-        {maintenance.done ? "Terminé" : "À faire"}
-      </span>
-    );
-  }
-}
 
 function ModifyButton({
   updating,
@@ -212,7 +185,7 @@ export default function MaintenanceDetails({
         <section className="flex flex-col gap-4 p-6 rounded shadow w-full max-w-md">
           <div className="flex justify-between">
             <span className="font-semibold">Statut:</span>
-            <UpdatableToggle
+            <UpdatableMaintenanceStatus
               name="done"
               updating={updating}
               maintenance={maintenance}
@@ -247,11 +220,9 @@ export default function MaintenanceDetails({
           </div>
 
           <div className="flex justify-between">
-            <span className="font-semibold">Coût:</span>
-            <UpdatableField
+            <UpdatableCost
               name="cost"
               updating={updating}
-              type="number"
               value={maintenance.cost.toString()}
               onChange={(newValue) => {
                 setMaintenance({ ...maintenance, cost: parseFloat(newValue) });

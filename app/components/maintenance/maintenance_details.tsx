@@ -1,11 +1,11 @@
 import { useState } from "react";
 import { useFetcher, NavLink } from "react-router";
-import ModifyButton from "~/components/ModifyButton";
-import UpdatableCost from "~/components/UpdatableCost";
-import UpdatableDate from "~/components/UpdatableDate";
-import UpdatableMaintenanceStatus from "~/components/UpdatableMaintenanceStatus";
-import UpdatableTextArea from "~/components/UpdatableTextArea";
-import UpdatableTextField from "~/components/UpdatableTextField";
+import ModifyButton from "~/components/maintenance/ModifyButton";
+import UpdatableCost from "~/components/maintenance/UpdatableCost";
+import UpdatableDate from "~/components/maintenance/UpdatableDate";
+import UpdatableMaintenanceStatus from "~/components/maintenance/UpdatableMaintenanceStatus";
+import UpdatableTextArea from "~/components/maintenance/UpdatableTextArea";
+import UpdatableTextField from "~/components/maintenance/UpdatableTextField";
 import type { Maintenance, Vehicule } from "~/database/schema";
 
 export default function MaintenanceDetails({

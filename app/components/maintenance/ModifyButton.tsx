@@ -27,7 +27,7 @@ export default function ModifyButton({
         }}
         type="button"
       >
-        Valider
+        Enregistrer
       </button>
     );
   }

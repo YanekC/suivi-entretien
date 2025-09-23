@@ -1,5 +1,5 @@
 import type { Route } from "./+types/maintenance";
-import MaintenanceDetails from "~/vehicule/maintenance_details";
+import MaintenanceDetails from "~/components/maintenance/maintenance_details";
 import { type Maintenance } from "~/database/schema";
 import { redirect } from "react-router";
 import {

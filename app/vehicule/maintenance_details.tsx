@@ -1,136 +1,12 @@
 import { useState } from "react";
 import { useFetcher, NavLink } from "react-router";
+import ModifyButton from "~/components/ModifyButton";
 import UpdatableCost from "~/components/UpdatableCost";
+import UpdatableDate from "~/components/UpdatableDate";
 import UpdatableMaintenanceStatus from "~/components/UpdatableMaintenanceStatus";
+import UpdatableTextArea from "~/components/UpdatableTextArea";
+import UpdatableTextField from "~/components/UpdatableTextField";
 import type { Maintenance, Vehicule } from "~/database/schema";
-
-function ModifyButton({
-  updating,
-  setUpdateing,
-  onValidate,
-}: {
-  updating: boolean;
-  setUpdateing: (updating: boolean) => void;
-  onValidate: (event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => void;
-}) {
-  if (!updating) {
-    return (
-      <button
-        className="px-4 py-2 w-30 bg-blue-500 text-white rounded-md hover:bg-blue-700"
-        type="button"
-        onClick={() => setUpdateing(true)}
-      >
-        Modifier
-      </button>
-    );
-  } else {
-    return (
-      <button
-        className="px-4 py-2 w-30 bg-green-600 text-white rounded-md hover:bg-green-800"
-        onClick={(event) => {
-          setUpdateing(false);
-          onValidate(event);
-        }}
-        type="button"
-      >
-        Valider
-      </button>
-    );
-  }
-}
-
-function UpdatableDate({
-  name,
-  updating,
-  value,
-  onChange,
-}: {
-  name: string;
-  updating: boolean;
-  value: string | null;
-  onChange: (newDate: string) => void;
-}) {
-  if (updating) {
-    return (
-      <input
-        name={name}
-        type="date"
-        value={value ? value : "2025-01-01"}
-        onChange={(e) => onChange(e.target.value)}
-        className="border rounded px-2 py-1"
-      />
-    );
-  } else {
-    return (
-      <span>
-        {value
-          ? new Date(value).toLocaleDateString(navigator.languages)
-          : "N/A"}
-      </span>
-    );
-  }
-}
-
-function UpdatableField({
-  name,
-  updating,
-  className,
-  type,
-  value,
-  onChange,
-}: {
-  name: string;
-  type: string;
-  className?: string;
-  updating: boolean;
-  value: string;
-  onChange: (newValue: string) => void;
-}) {
-  if (updating) {
-    return (
-      <input
-        name={name}
-        type={type}
-        value={value}
-        onChange={(e) => onChange(e.target.value)}
-        className="border rounded px-2 py-1"
-      />
-    );
-  } else {
-    return <span className={className ? className : ""}>{value}</span>;
-  }
-}
-
-function UpdatableTextArea({
-  name,
-  updating,
-  value,
-  onChange,
-}: {
-  name: string;
-  updating: boolean;
-  value: string;
-  onChange: (newValue: string) => void;
-}) {
-  if (updating) {
-    return (
-      <textarea
-        name={name}
-        value={value}
-        onChange={(e) => onChange(e.target.value)}
-        className="border rounded px-2 py-1 w-full max-w-md resize-none"
-        rows={3}
-        placeholder="Description de la maintenance..."
-      />
-    );
-  } else {
-    return (
-      <p className="text-white max-w-md p-2 whitespace-pre">
-        {value || "Aucune description"}
-      </p>
-    );
-  }
-}
 
 export default function MaintenanceDetails({
   maintenanceParam,
@@ -167,11 +43,10 @@ export default function MaintenanceDetails({
       </NavLink>
       <fetcher.Form method="post" className="w-full flex flex-col items-center">
         <header className="mb-6 flex flex-col items-center relative w-full max-w-md">
-          <UpdatableField
+          <UpdatableTextField
             name="title"
             updating={updating}
             type="text"
-            className="mt-4 text-2xl font-bold"
             value={maintenance.title}
             onChange={(newValue) => {
               setMaintenance({ ...maintenance, title: newValue });

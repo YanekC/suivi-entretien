@@ -37,7 +37,7 @@ export async function loader({ params }: Route.LoaderArgs) {
 export default function Vehicules({ loaderData }: Route.ComponentProps) {
   return (
     <VehiculeDetails
-      vehicule={loaderData.vehiculesData[0]}
+      vehiculeParam={loaderData.vehiculesData[0]}
       maintenances={loaderData.maintenancesData}
     />
   );

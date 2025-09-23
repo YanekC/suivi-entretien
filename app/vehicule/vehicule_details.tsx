@@ -1,15 +1,26 @@
+import { useState } from "react";
 import { Form, NavLink } from "react-router";
+import AddButton from "~/components/AddButton";
+import ModifyDeleteButtons from "~/components/ModifyDeleteButtons";
+import ReturnButton from "~/components/ReturnButton";
+import SvgRightArrow from "~/components/SvgRightArrow";
+import UpdatableKilometers from "~/components/vehicule/UpdatableKilometers";
+import UpdatableYear from "~/components/vehicule/UpdatableYear";
 import type { Maintenance, Vehicule } from "~/database/schema";
 
 export default function VehiculeDetails({
-  vehicule,
+  vehiculeParam,
   maintenances,
 }: {
-  vehicule: Vehicule;
+  vehiculeParam: Vehicule;
   maintenances: Maintenance[] | null;
 }) {
+  const [updating, setUpdating] = useState(false);
+  const [vehicule, setVehicule] = useState(vehiculeParam);
+
   return (
     <main className="flex flex-col items-center justify-center pt-16 pb-4">
+      <ReturnButton url="/" />
       <header className="mb-6 flex flex-col items-center">
         <img
           src="/car-placeholder.jpg"
@@ -20,24 +31,45 @@ export default function VehiculeDetails({
           {vehicule.brand} {vehicule.model}
         </h1>
       </header>
-      <section className="flex flex-row gap-8 p-6 rounded shadow">
+      <section className="flex flex-row gap-8 pl-6 pr-6 pt-6 rounded shadow">
         <div>
-          <span className="font-semibold">Année:</span> {vehicule.year}
+          <UpdatableYear
+            name="year"
+            updating={updating}
+            value={vehicule.year.toString()}
+            onChange={(newValue) => {
+              setVehicule({ ...vehicule, year: parseInt(newValue) });
+            }}
+          />
         </div>
         <div>
-          <span className="font-semibold">Kilométrage: </span>
-          {vehicule.kilometers} km
+          <UpdatableKilometers
+            name="kilometers"
+            updating={updating}
+            value={vehicule.kilometers.toString()}
+            onChange={(newValue) => {
+              setVehicule({ ...vehicule, kilometers: parseInt(newValue) });
+            }}
+          />
         </div>
       </section>
-      <div className="flex border-b border-gray-200  dark:border-gray-700">
-        <h1 className="text-3xl flex-2 m-4">Maintenance</h1>
+      <ModifyDeleteButtons
+        updating={updating}
+        setUpdating={setUpdating}
+        onValidate={(event) => {
+          event.preventDefault();
+        }}
+        onDelete={(event) => {
+          event.preventDefault();
+        }}
+      />
+      <div className="flex w-full pt-4 max-w-md border-b border-gray-200  dark:border-gray-700">
+        <h2 className="text-3xl flex-2 m-4">Entretiens</h2>
         <Form action={`/vehicules/${vehicule.id}/maintenance/`} method="put">
-          <button className=" m-4 text-3xl text-blue-200 bg-blue-500 rounded-md size-9 ">
-            +
-          </button>
+          <AddButton />
         </Form>
       </div>
-      <div className="items-center gap-16 min-h-0">
+      <div className="items-center w-full max-w-md gap-16 min-h-0">
         <div className="w-full space-y-6">
           <ul className="">
             {maintenances?.map(({ id, title, done }) => (
@@ -49,11 +81,11 @@ export default function VehiculeDetails({
                   key={id}
                   className="border-b border-gray-200  dark:border-gray-700 p-3 flex flex-row gap-4 max-h-40"
                 >
-                  <div className="flex flex-col justify-center">
-                    <span className="font-semibold">
-                      {title} - {done ? "Fait" : "À faire"}
-                    </span>
+                  <div className="flex justify-between w-full">
+                    <span className="font-semibold"> {title} </span>
+                    <span>{done ? "✅" : "❌"}</span>
                   </div>
+                  <SvgRightArrow />
                 </li>
               </NavLink>
             ))}
